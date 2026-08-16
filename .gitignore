@@ -31,8 +31,7 @@ Thumbs.db
 # Checkpoints / local backups
 _checkpoint_*/
 
-# CUIfy Python server secrets & runtime
-cuify-server/.env
+# CUIfy Python server runtime (secrets are committed per project owner request)
 cuify-server/.venv/
 cuify-server/__pycache__/
 cuify-server/**/__pycache__/
@@ -46,3 +45,4 @@ cuify-server/tmp/
 .env
 .env.*
 !.env.example
+!cuify-server/.env

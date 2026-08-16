@@ -1,0 +1,10 @@
+FROM python:3.10.13-slim
+WORKDIR /app
+COPY Server /app
+COPY **/.env /.env
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
+RUN apt-get update && apt-get install -y ffmpeg
+RUN python Server.py -cache_only
+EXPOSE 9999
+CMD ["python", "Server.py"]

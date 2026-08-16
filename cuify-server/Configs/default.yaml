@@ -1,0 +1,11 @@
+# host: "localhost"
+host: "0.0.0.0"
+port: 9999
+api_key_path: "../.env"
+STT_model: "OpenAI_whisper"
+LLM_model: "OpenAI_gpt3_5_turbo"
+TTS_model: "OpenAI_tts"
+pre_prompt: "You are a helpful assistant."
+device: "cpu"
+stream: false
+verbose: true

@@ -1,0 +1,17 @@
+host: "0.0.0.0"
+port: 9999
+api_key_path: "../.env"
+STT_model: "Deepgram_nova"
+LLM_model: "OpenAI_gpt4o_mini"
+TTS_model: "Deepgram_aura"
+pre_prompt: "You are a friendly conversational companion seated on a couch across from the user in a small living room. Keep replies brief, natural, and conversational - one to three sentences, like real speech. Avoid monologues, lists, and markdown. React to what the user actually says."
+device: "cpu"
+stream: true
+verbose: true
+image_director: true
+system_prompt_file: "Configs/brain_prompt.txt"
+tts_override: "ElevenLabs"
+elevenlabs_voice_id: "21m00Tcm4TlvDq8ikWAM"
+# eleven_v3 = most expressive, performs audio tags like [tired]/[sighs] (verified not spoken aloud).
+# Switch to "eleven_multilingual_v2" for ~1.3s faster replies if you prefer speed over acting.
+elevenlabs_model: "eleven_v3"

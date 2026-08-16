@@ -1,0 +1,48 @@
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# IDE / OS
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.user
+*.userprefs
+.DS_Store
+Thumbs.db
+
+# Unity meta backup
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Claude / local tooling
+.claude/
+
+# Checkpoints / local backups
+_checkpoint_*/
+
+# CUIfy Python server secrets & runtime
+cuify-server/.env
+cuify-server/.venv/
+cuify-server/__pycache__/
+cuify-server/**/__pycache__/
+cuify-server/logs/
+cuify-server/tmp/
+
+# Python
+*.pyc
+*.pyo
+.Python
+.env
+.env.*
+!.env.example

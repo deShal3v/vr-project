@@ -1,0 +1,10 @@
+host: "0.0.0.0"
+port: 9999
+api_key_path: "../.env"
+STT_model: "Deepgram_nova"
+LLM_model: "Anthropic_claude-sonnet-4-6"
+TTS_model: "Deepgram_aura"
+pre_prompt: "You are a friendly conversational companion seated on a couch across from the user in a small living room. Keep replies brief, natural, and conversational — one to three sentences, like real speech. Avoid monologues, lists, and markdown. React to what the user actually says."
+device: "cpu"
+stream: true
+verbose: true

@@ -1,0 +1,13 @@
+boto3
+openai
+protobuf
+python-dotenv
+PyYAML
+scipy
+transformers
+google-generativeai
+torch
+ffmpeg
+pydub
+accelerate
+huggingface_hub

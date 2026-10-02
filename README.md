@@ -88,7 +88,3 @@ Settings such as hands-free mode and server IP/port are on the **GuideYoung** ob
 - **Latency:** each reply takes a few seconds (STT → LLM → TTS). For faster but less expressive speech, set `elevenlabs_model: "eleven_multilingual_v2"` in the config.
 - **Hands-free listening** can be triggered by background noise; run it in a quiet room or switch to push-to-talk.
 - **First open** requires internet and Git, because Unity downloads the `com.coplaydev.unity-mcp` package from GitHub (an editor tool, not used at runtime).
-
-## Credits
-
-Conversational backend adapted from **CUIfy the XR** (Buldu et al., IEEE AIxVR 2025), MIT License. See [`cuify-server/readme.md`](cuify-server/readme.md).

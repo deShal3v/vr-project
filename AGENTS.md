@@ -10,8 +10,8 @@ A **Unity 6 VR application** with a **CUIfy** conversational NPC: speech-to-text
 - **CUIfy bridge** (`Assets/CUIfy/`): `NPCClient.cs` and related scripts connect Unity to the server
 - **CUIfy server** (`cuify-server/`): Python backend for STT, LLM, TTS
 
-**Primary scene:** `Assets/Scenes/BasicScene.unity`  
-**Alternate scene:** `Assets/Scenes/SampleScene.unity`
+**Primary scene:** `Assets/Scenes/SampleScene.unity` (contains the Guide; the only scene in the build list)  
+**Unused scene:** `Assets/Scenes/BasicScene.unity`
 
 ---
 
@@ -49,8 +49,8 @@ Packages are restored from `Packages/manifest.json` and `Packages/packages-lock.
 vr-project/
 ├── Assets/
 │   ├── CUIfy/              # Unity ↔ server bridge (NPCClient, audio utils, guide images)
-│   ├── Scenes/             # BasicScene.unity (main), SampleScene.unity
-│   ├── StreamingAssets/    # test_question.wav for mic-less testing
+│   ├── Scenes/             # SampleScene.unity (main), BasicScene.unity (unused)
+│   ├── StreamingAssets/    # test_question.wav, TrialPictures/ (study photo set)
 │   ├── Samples/            # XR Hands + XRI sample assets
 │   ├── Plugins/            # SALSA LipSync
 │   └── ...
@@ -60,10 +60,9 @@ vr-project/
 │   ├── Server.py           # Entry point
 │   ├── ClientListener.py   # TCP protocol with Unity
 │   ├── Configs/              # YAML configs (STT/LLM/TTS models)
-│   ├── .env                  # API keys (present in this repo)
+│   ├── .env                  # API keys (create from .env.example; gitignored)
 │   ├── .env.example
 │   └── requirements.txt
-├── scripts/                # Optional helpers (Mac-oriented; adapt on Windows)
 ├── README.md
 └── AGENTS.md               # This file
 ```
@@ -113,14 +112,14 @@ pip install -r requirements.txt
 
 **Note:** First `pip install` downloads **PyTorch** and other large packages (~2–4 GB, several minutes).
 
-**API keys:** `cuify-server/.env` should already exist. If missing, copy `.env.example` → `.env` and fill keys. Configs read via `api_key_path: "../.env"` in YAML files.
+**API keys:** copy `cuify-server/.env.example` → `cuify-server/.env` and fill keys (never commit it). Configs read it via `api_key_path: ".env"`, relative to `cuify-server/` (run the server from that folder).
 
 ### 4. Open Unity project
 
 1. Unity Hub → **Open** → select **repo root** (folder containing `Assets/`, `Packages/`, `ProjectSettings/`)
 2. Choose editor **6000.4.0f1**
 3. Wait for package resolve and `Library/` generation (first open: 10–30+ minutes)
-4. Open `Assets/Scenes/BasicScene.unity`
+4. Open `Assets/Scenes/SampleScene.unity`
 
 ---
 
@@ -142,7 +141,7 @@ pip install -r requirements.txt
 
    Server binds `0.0.0.0:9999` (see YAML `host` / `port`).
 
-2. **Unity Editor** → open `BasicScene.unity` → connect VR headset → **Play**
+2. **Unity Editor** → open `SampleScene.unity` → connect VR headset → **Play**
 
 3. **Verify bridge** on the Guide/NPC GameObject with `NPCClient`:
    - `serverIP` = `127.0.0.1` when server runs on same machine
@@ -205,7 +204,7 @@ Default production config `Configs/deepgram-openai.yaml`:
 
 - Upgrade Unity editor or bump package versions without user approval
 - Commit `Library/`, `Temp/`, `.venv/`, logs, or build artifacts
-- Commit new secrets; treat `.env` as sensitive even if present in repo
+- Commit secrets; `.env` is gitignored and must stay out of the repo
 - Assume Tailscale or remote mic/RDP — user may develop locally on one PC
 - Run PowerShell mic scripts from macOS unless targeting a remote Windows host via SSH
 
@@ -238,17 +237,6 @@ GPU/CUDA variant: `DockerFileWithCUDA`
 
 ---
 
-## Optional: helper scripts (macOS)
-
-```bash
-./scripts/start-cuify-server.sh [Configs/deepgram-openai.yaml]
-./scripts/open-unity.sh
-```
-
-On **Windows**, run the PowerShell/Python commands in this doc directly instead.
-
----
-
 ## Quick agent checklist
 
 - [ ] Unity Hub + **6000.4.0f1** installed
@@ -256,7 +244,7 @@ On **Windows**, run the PowerShell/Python commands in this doc directly instead.
 - [ ] `cuify-server/.venv` created, `pip install -r requirements.txt` succeeded
 - [ ] `ffmpeg` on PATH
 - [ ] `python Server.py --config Configs/deepgram-openai.yaml` listening on 9999
-- [ ] Unity project opened at repo root; `BasicScene.unity` loaded
+- [ ] Unity project opened at repo root; `SampleScene.unity` loaded
 - [ ] `NPCClient.serverIP` = `127.0.0.1`, `serverPort` = `9999`
 - [ ] CUIfy server running **before** Unity Play
 

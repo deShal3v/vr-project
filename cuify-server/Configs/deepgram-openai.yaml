@@ -1,6 +1,6 @@
 host: "0.0.0.0"
 port: 9999
-api_key_path: "../.env"
+api_key_path: ".env"
 STT_model: "Deepgram_nova"
 LLM_model: "OpenAI_gpt4o_mini"
 TTS_model: "Deepgram_aura"

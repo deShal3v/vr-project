@@ -55,7 +55,7 @@ public class GuideImageGenerator : MonoBehaviour
     [Tooltip("If true, an image request shows the NEXT photo from localFolderPath on the window instead of " +
              "generating with OpenAI. Each request advances to the next file (in filename order); wraps at the end.")]
     public bool useLocalFolder = true;
-    [Tooltip("Folder to pull photos from, shown in filename order. Defaults to Assets/TrialPictures in the project.")]
+    [Tooltip("Folder to pull photos from, shown in filename order. Defaults to Assets/StreamingAssets/TrialPictures in the project.")]
     public string localFolderPath = "";
     [Tooltip("Renderer the photo is shown on (the room Window). Auto-found by targetRendererName if left empty.")]
     public Renderer targetRenderer;
@@ -91,8 +91,9 @@ public class GuideImageGenerator : MonoBehaviour
 
     void Awake()
     {
-        // Bundled trial photos ship in Assets/TrialPictures (works on any machine after clone).
-        string bundledPictures = Path.Combine(Application.dataPath, "TrialPictures");
+        // Bundled trial photos ship in Assets/StreamingAssets/TrialPictures, which Unity copies
+        // verbatim into PC builds (Application.dataPath/TrialPictures only exists in the Editor).
+        string bundledPictures = Path.Combine(Application.streamingAssetsPath, "TrialPictures");
         if (useLocalFolder && Directory.Exists(bundledPictures))
             localFolderPath = bundledPictures;
         else if (useLocalFolder && string.IsNullOrEmpty(localFolderPath))

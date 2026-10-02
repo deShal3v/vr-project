@@ -1,112 +1,94 @@
-# VR Project (Unity + CUIfy)
+# The Failing Guide
 
-Unity 6 VR project with **CUIfy** conversational-agent bridge, OpenXR / Meta XR, hand tracking, and XR Interaction Toolkit.
+**Students:** May Daniel, Dor Ezra, Omer Shalev
 
-This repo contains everything needed to run on a new machine:
+A VR experiment about how people react when an AI agent keeps failing at a task.
 
-- **Unity client** (root): scenes, XR setup, `Assets/CUIfy/` bridge scripts (`NPCClient`, audio utilities, guide image generation)
-- **CUIfy Python server** (`cuify-server/`): STT / LLM / TTS backend that Unity connects to on **TCP port 9999**
+The participant sits on a couch in a small virtual living room, across from **Noa**, a voice-driven AI guide with lip-sync. The participant asks Noa (by voice) for one specific picture: *a Labrador puppy wearing sunglasses riding a bicycle on a green park path*. Noa shows the picture on the room's window, but for at least the first 4 attempts it is a near miss: wrong animal, no sunglasses, wrong vehicle or wrong place. With every attempt, and as the participant gets more frustrated, Noa's voice sounds more tired, anxious and apologetic. She shows the correct picture on the 5th request, or once the participant is clearly angry, but never before 4 failed attempts.
+
+Under the hood, Unity sends the participant's speech to a small Python server (based on [CUIfy](https://doi.org/10.1109/AIxVR63409.2025.00037)) which runs speech-to-text (Deepgram), an LLM (OpenAI GPT-4o-mini) that picks Noa's reply, which photo to show and an emotion level 1–5, and expressive text-to-speech (ElevenLabs v3). The photos are a fixed set of 8 pre-made images; nothing is generated live.
+
+```
+[Headset mic] → Unity (NPCClient) ──TCP 9999──► cuify-server: STT → LLM → TTS
+[Voice + lip-sync + photo on window] ◄────────── audio + image key
+```
 
 ## Requirements
 
-### Unity
-- [Unity Hub](https://unity.com/download) with editor **6000.4.0f1**
-- VR headset runtime as configured in project (OpenXR / Meta OpenXR packages included)
-- Optional: Android build support if deploying to Quest
+| | |
+|---|---|
+| **Platform** | Windows 10/11 PC (runs inside the Unity Editor) |
+| **Hardware** | VR-ready PC + Meta Quest 2/3/Pro over Quest Link or Air Link (any OpenXR PC headset should work); headset microphone; internet connection |
+| **Engine** | Unity **6000.4.0f1** (Unity 6, URP) |
+| **Unity packages** (auto-installed from `Packages/manifest.json`) | OpenXR 1.16.1, Meta OpenXR 2.5.0, XR Interaction Toolkit 3.4.1, XR Hands 1.7.3, Input System 1.19.0, URP 17.4.0 |
+| **Bundled plugins** | SALSA LipSync (Crazy Minnow Studio), Reallusion CC Unity Tools (shaders for the Noa character) |
+| **Other software** | Unity Hub, Git (Unity fetches one package from GitHub), Meta Quest Link app, Python 3.10–3.12, ffmpeg |
+| **API keys** (not included) | OpenAI, Deepgram, ElevenLabs |
 
-### CUIfy server
-- Python **3.10+**
-- `ffmpeg` on PATH (required by server audio pipeline)
-- API keys for your chosen models (OpenAI, Deepgram, Anthropic, etc.)
+## Installation and launch
 
-## Quick start on a new computer
-
-### 1. Clone
+**1. Get the project**
 
 ```bash
-git clone git@github.com:deShal3v/vr-project.git
-cd vr-project
+git clone https://github.com/deShal3v/vr-project.git
 ```
 
-### 2. Start the CUIfy bridge server
+**2. Start the server** (must be running before you press Play)
 
 ```bash
-cd cuify-server
-cp .env.example .env
-# Edit .env and add your API keys
+cd vr-project/cuify-server
+python -m venv .venv
+.venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt   # downloads PyTorch, takes a few minutes
+copy .env.example .env            # macOS/Linux: cp .env.example .env
+```
 
-python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+Fill in `OPENAI_API_KEY`, `DEEPGRAM_API_KEY` and `ELEVENLABS_API_KEY` in `cuify-server/.env`, then run:
 
-# Pick a config (deepgram-openai.yaml, deepgram-claude.yaml, or default.yaml)
+```bash
 python Server.py --config Configs/deepgram-openai.yaml
 ```
 
-Server listens on **0.0.0.0:9999** by default (see `cuify-server/Configs/*.yaml`).
+Wait for `Server is listening on 0.0.0.0:9999`.
 
-### 3. Open Unity project
+**3. Open the Unity project**
 
-1. Unity Hub → **Open** → select this repo root (folder with `Assets/`, `Packages/`, `ProjectSettings/`)
-2. Wait for packages to resolve (first open regenerates `Library/` — this is normal)
-3. Open scene: `Assets/Scenes/BasicScene.unity` (or your target scene)
+1. Unity Hub → **Add project from disk** → select the `vr-project` folder → open with **6000.4.0f1**. The first import takes 10–30 minutes.
+2. Open `Assets/Scenes/SampleScene.unity`.
 
-### 4. Configure the Unity ↔ server bridge
+**4. Run in VR**
 
-On the NPC / Guide object with **`NPCClient`** (in `Assets/CUIfy/`):
+1. Connect the Quest with Quest Link / Air Link, and make sure the Meta Quest Link app is set as the active OpenXR runtime.
+2. Press **Play** in Unity, put on the headset and start talking to Noa.
 
-| Field | Value |
-|-------|--------|
-| `serverIP` | `127.0.0.1` (same PC) or LAN IP of server machine |
-| `serverPort` | `9999` |
-| `LLM` / `STTModel` / `TTSModel` | Match your `cuify-server/Configs/*.yaml` |
+No pre-built executable is included. To make a standalone PC build: **File → Build Profiles → Windows → Build** (the scene is already in the build list). Start the server before launching the `.exe`.
 
-API keys can be set in Unity Inspector **or** loaded from `cuify-server/.env` via server config (`api_key_path`).
+## How to use
 
-For headless / automated testing without a mic:
-- Enable `useTestAudioInsteadOfMic`
-- Uses `Assets/StreamingAssets/test_question.wav`
+1. Sit down (or stand) facing Noa.
+2. Ask her for the picture, e.g. *"Can you show me a Labrador puppy with sunglasses riding a bike in a park?"*
+3. She answers out loud and a photo appears on the window. Correct her, insist, or show frustration, and watch how her behavior changes.
 
-### 5. Run in VR
+### Controls
 
-- Connect headset, press Play in Unity Editor, or build to your target platform
-- Ensure the CUIfy server is running **before** Play
+| Action | VR | Keyboard (Editor) |
+|---|---|---|
+| Talk | Just speak (hands-free mode detects speech and sends after ~1 s of silence) | — |
+| Push-to-talk (alternative) | Hold right controller **A**, release to send | **Space** to start, **Space** again to send |
+| Show next photo manually (researcher override) | Left controller **X** | **N** |
+| Send a pre-recorded test question (no mic needed) | — | **T** |
 
-## What's included
+Settings such as hands-free mode and server IP/port are on the **GuideYoung** object in the scene (`NPCClient` and `GuideImageGenerator` components). Noa's behavior rules are in `cuify-server/Configs/brain_prompt.txt`.
 
-| Component | Location |
-|-----------|----------|
-| CUIfy Unity bridge (`NPCClient`, `SavWav`, `WavUtility`, etc.) | `Assets/CUIfy/` |
-| XR Interaction Toolkit + Hands samples | `Assets/Samples/` |
-| OpenXR / Meta XR packages | `Packages/manifest.json` + `packages-lock.json` |
-| SALSA LipSync plugin | `Assets/Plugins/Crazy Minnow Studio/` |
-| CUIfy Python server | `cuify-server/` |
-| Server configs | `cuify-server/Configs/` |
-| Docker (optional) | `cuify-server/DockerFile` |
+## Known issues and limitations
 
-## Docker (optional)
+- **Needs the Python server, internet and paid API keys.** Without them Noa doesn't respond. Keys are not included in the repo.
+- **PC VR only.** A standalone Quest APK is not supported: the app talks to the server on `127.0.0.1` and loads the photos from disk.
+- **Start the server first.** If Unity was already in Play mode when the server started, stop and press Play again.
+- **Latency:** each reply takes a few seconds (STT → LLM → TTS). For faster but less expressive speech, set `elevenlabs_model: "eleven_multilingual_v2"` in the config.
+- **Hands-free listening** can be triggered by background noise; run it in a quiet room or switch to push-to-talk.
+- **First open** requires internet and Git, because Unity downloads the `com.coplaydev.unity-mcp` package from GitHub (an editor tool, not used at runtime).
 
-From `cuify-server/`:
+## Credits
 
-```bash
-docker build -f DockerFile -t cuify-server .
-# Mount .env at runtime; expose port 9999
-```
-
-## Troubleshooting
-
-- **Unity can't reach server**: check firewall, `serverIP`, and that `Server.py` is running
-- **No audio / mic**: verify VR mic permissions; or use `useTestAudioInsteadOfMic` + `test_question.wav`
-- **Package errors on first open**: use Unity **6000.4.0f1** exactly; delete `Library/` and reopen if needed
-- **Missing API keys**: copy `cuify-server/.env.example` → `.env` and fill keys; never commit `.env`
-
-## Security
-
-- `.env` is gitignored — do not commit API keys
-- Rotate keys if they were ever shared or committed elsewhere
-
-## Unity version
-
-```
-6000.4.0f1 (8cf496087c8f)
-```
+Conversational backend adapted from **CUIfy the XR** (Buldu et al., IEEE AIxVR 2025), MIT License. See [`cuify-server/readme.md`](cuify-server/readme.md).
